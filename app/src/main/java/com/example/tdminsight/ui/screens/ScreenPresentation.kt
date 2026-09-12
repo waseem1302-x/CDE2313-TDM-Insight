@@ -4,6 +4,8 @@ import com.example.tdminsight.model.TdmInput
 import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.model.WorkflowType
 import com.example.tdminsight.model.requirements
+import java.util.Locale
+import kotlin.math.abs
 
 enum class CalculationField {
     MEDICATION_DOSE,
@@ -66,6 +68,20 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
     input.laboratoryInformation.forEach { (key, value) ->
         if (value.isNotBlank()) add(ReviewItem(laboratoryLabel(key), value))
     }
+}
+
+fun isPatientInputField(field: String): Boolean =
+    field == TdmInputKeys.AGE_YEARS || field == TdmInputKeys.BODY_WEIGHT_KG
+
+fun formatResultValue(value: Double): String {
+    val decimalPlaces = when {
+        abs(value) >= 100.0 -> 2
+        abs(value) >= 1.0 -> 3
+        else -> 4
+    }
+    return String.format(Locale.US, "%.${decimalPlaces}f", value)
+        .trimEnd('0')
+        .trimEnd('.')
 }
 
 private fun patientLabel(key: String): String = when (key) {

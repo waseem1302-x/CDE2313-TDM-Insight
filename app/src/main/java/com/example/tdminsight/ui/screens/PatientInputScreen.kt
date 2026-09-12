@@ -18,6 +18,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.ui.components.TdmTextField
+import com.example.tdminsight.ui.components.ValidationSummaryCard
+import com.example.tdminsight.validation.ValidationIssue
+import com.example.tdminsight.validation.ValidationSeverity
 
 @Composable
 fun PatientInputScreen(
@@ -25,8 +28,13 @@ fun PatientInputScreen(
     onParameterChange: (key: String, value: String) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    validationIssues: List<ValidationIssue> = emptyList()
 ) {
+    val fieldErrors = validationIssues
+        .filter { it.severity == ValidationSeverity.ERROR }
+        .associate { it.field to it.message }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -44,6 +52,8 @@ fun PatientInputScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
+        ValidationSummaryCard(validationIssues)
+
         TdmTextField(
             value = patientParameters["caseId"].orEmpty(),
             onValueChange = { onParameterChange("caseId", it) },
@@ -53,13 +63,15 @@ fun PatientInputScreen(
             value = patientParameters[TdmInputKeys.AGE_YEARS].orEmpty(),
             onValueChange = { onParameterChange(TdmInputKeys.AGE_YEARS, it) },
             label = "Age (years)",
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            errorText = fieldErrors[TdmInputKeys.AGE_YEARS]
         )
         TdmTextField(
             value = patientParameters[TdmInputKeys.BODY_WEIGHT_KG].orEmpty(),
             onValueChange = { onParameterChange(TdmInputKeys.BODY_WEIGHT_KG, it) },
             label = "Weight (kg)",
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Decimal,
+            errorText = fieldErrors[TdmInputKeys.BODY_WEIGHT_KG]
         )
         TdmTextField(
             value = patientParameters["notes"].orEmpty(),
@@ -82,7 +94,7 @@ fun PatientInputScreen(
                 onClick = onNext,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Next")
+                Text("Continue")
             }
         }
     }
