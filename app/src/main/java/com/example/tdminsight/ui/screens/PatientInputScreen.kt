@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.ui.components.TdmTextField
 
 @Composable
@@ -49,17 +50,16 @@ fun PatientInputScreen(
             label = "Case ID"
         )
         TdmTextField(
-            value = patientParameters["age"].orEmpty(),
-            onValueChange = { onParameterChange("age", it) },
-            label = "Age",
+            value = patientParameters[TdmInputKeys.AGE_YEARS].orEmpty(),
+            onValueChange = { onParameterChange(TdmInputKeys.AGE_YEARS, it) },
+            label = "Age (years)",
             keyboardType = KeyboardType.Number
         )
         TdmTextField(
-            value = patientParameters["weight"].orEmpty(),
-            onValueChange = { onParameterChange("weight", it) },
-            label = "Weight",
-            keyboardType = KeyboardType.Decimal,
-            supportingText = "Use the unit defined by your approved project specification."
+            value = patientParameters[TdmInputKeys.BODY_WEIGHT_KG].orEmpty(),
+            onValueChange = { onParameterChange(TdmInputKeys.BODY_WEIGHT_KG, it) },
+            label = "Weight (kg)",
+            keyboardType = KeyboardType.Decimal
         )
         TdmTextField(
             value = patientParameters["notes"].orEmpty(),
