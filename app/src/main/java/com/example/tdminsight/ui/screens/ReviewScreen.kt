@@ -18,13 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.tdminsight.model.TdmInput
+import com.example.tdminsight.ui.components.ValidationSummaryCard
+import com.example.tdminsight.validation.ValidationIssue
 
 @Composable
 fun ReviewScreen(
     input: TdmInput,
     onBack: () -> Unit,
     onCalculate: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    validationIssues: List<ValidationIssue> = emptyList()
 ) {
     val reviewItems = buildReviewItems(input)
 
@@ -44,6 +47,8 @@ fun ReviewScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        ValidationSummaryCard(validationIssues)
 
         reviewItems.forEach { item ->
             Card(

@@ -16,8 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.model.WorkflowType
 import com.example.tdminsight.ui.components.TdmTextField
+import com.example.tdminsight.ui.components.ValidationSummaryCard
+import com.example.tdminsight.validation.ValidationIssue
+import com.example.tdminsight.validation.ValidationSeverity
 
 @Composable
 fun CalculationInputScreen(
@@ -41,10 +45,14 @@ fun CalculationInputScreen(
     modifier: Modifier = Modifier,
     creatinineClearanceMlMin: String = "",
     infusionDurationHours: String = "",
+    validationIssues: List<ValidationIssue> = emptyList(),
     onCreatinineClearanceMlMinChange: (String) -> Unit = {},
     onInfusionDurationHoursChange: (String) -> Unit = {}
 ) {
     val visibleFields = calculationFieldsFor(workflow)
+    val fieldErrors = validationIssues
+        .filter { it.severity == ValidationSeverity.ERROR }
+        .associate { it.field to it.message }
 
     Column(
         modifier = modifier
@@ -58,17 +66,20 @@ fun CalculationInputScreen(
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = "Enter only the values needed for this workflow. Values are reviewed and validated outside this screen before calculation.",
+            text = "Enter only the values needed for this workflow. All values are validated before the case can proceed to Review.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        ValidationSummaryCard(validationIssues)
 
         if (CalculationField.MEDICATION_DOSE in visibleFields) {
             TdmTextField(
                 value = medicationDose,
                 onValueChange = onMedicationDoseChange,
                 label = "Medication dose (mg)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["medicationDose"]
             )
         }
 
@@ -77,7 +88,8 @@ fun CalculationInputScreen(
                 value = dosingInterval,
                 onValueChange = onDosingIntervalChange,
                 label = "Dosing interval (hours)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["dosingInterval"]
             )
         }
 
@@ -86,7 +98,8 @@ fun CalculationInputScreen(
                 value = preDoseConcentration,
                 onValueChange = onPreDoseConcentrationChange,
                 label = "Pre-dose concentration (mg/L)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["preDoseConcentration"]
             )
         }
 
@@ -95,7 +108,8 @@ fun CalculationInputScreen(
                 value = postDoseConcentration,
                 onValueChange = onPostDoseConcentrationChange,
                 label = "Post-dose concentration (mg/L)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["postDoseConcentration"]
             )
         }
 
@@ -105,7 +119,8 @@ fun CalculationInputScreen(
                 onValueChange = onSamplingTimeChange,
                 label = "Post sample — hours after infusion end",
                 keyboardType = KeyboardType.Decimal,
-                supportingText = "Time from the end of infusion to the post-dose blood sample."
+                supportingText = "Time from the end of infusion to the post-dose blood sample.",
+                errorText = fieldErrors[TdmInputKeys.POST_SAMPLE_DELAY_HOURS]
             )
         }
 
@@ -115,7 +130,8 @@ fun CalculationInputScreen(
                 onValueChange = onAdditionalTimingInformationChange,
                 label = "Pre/Post sample time difference (hours)",
                 keyboardType = KeyboardType.Decimal,
-                supportingText = "Elapsed clock-time difference between the pre and post sample timestamps."
+                supportingText = "Elapsed clock-time difference between the pre and post sample timestamps.",
+                errorText = fieldErrors[TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS]
             )
         }
 
@@ -124,7 +140,8 @@ fun CalculationInputScreen(
                 value = creatinineClearanceMlMin,
                 onValueChange = onCreatinineClearanceMlMinChange,
                 label = "Creatinine clearance (mL/min)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["creatinineClearanceMlMin"]
             )
         }
 
@@ -133,7 +150,8 @@ fun CalculationInputScreen(
                 value = infusionDurationHours,
                 onValueChange = onInfusionDurationHoursChange,
                 label = "Infusion duration (hours)",
-                keyboardType = KeyboardType.Decimal
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["infusionDurationHours"]
             )
         }
 

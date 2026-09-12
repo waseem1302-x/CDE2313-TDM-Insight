@@ -44,10 +44,14 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
         if (value.isNotBlank()) add(ReviewItem(patientLabel(key), value))
     }
 
-    input.medicationDose?.let { add(ReviewItem("Medication dose", it.toString())) }
-    input.dosingInterval?.let { add(ReviewItem("Dosing interval", it.toString())) }
-    input.preDoseConcentration?.let { add(ReviewItem("Pre-dose concentration", it.toString())) }
-    input.postDoseConcentration?.let { add(ReviewItem("Post-dose concentration", it.toString())) }
+    input.medicationDose?.let { add(ReviewItem("Medication dose (mg)", it.toString())) }
+    input.dosingInterval?.let { add(ReviewItem("Dosing interval (hours)", it.toString())) }
+    input.preDoseConcentration?.let {
+        add(ReviewItem("Pre-dose concentration (mg/L)", it.toString()))
+    }
+    input.postDoseConcentration?.let {
+        add(ReviewItem("Post-dose concentration (mg/L)", it.toString()))
+    }
     input.creatinineClearanceMlMin?.let {
         add(ReviewItem("Creatinine clearance (mL/min)", it.toString()))
     }

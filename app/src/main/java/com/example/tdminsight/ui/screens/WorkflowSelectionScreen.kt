@@ -2,11 +2,13 @@ package com.example.tdminsight.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import com.example.tdminsight.ui.components.WorkflowCard
 fun WorkflowSelectionScreen(
     selectedWorkflow: WorkflowType?,
     onWorkflowSelected: (WorkflowType) -> Unit,
+    onContinue: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -35,7 +38,7 @@ fun WorkflowSelectionScreen(
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = "Choose the workflow that matches the fictional case. The next screen will only show the fields required for that workflow.",
+            text = "Choose the workflow that matches the fictional case. The next screen only shows fields required for that workflow.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -48,11 +51,23 @@ fun WorkflowSelectionScreen(
             )
         }
 
-        OutlinedButton(
-            onClick = onBack,
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Back")
+            OutlinedButton(
+                onClick = onBack,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Back")
+            }
+            Button(
+                onClick = onContinue,
+                enabled = selectedWorkflow != null,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Continue")
+            }
         }
     }
 }
