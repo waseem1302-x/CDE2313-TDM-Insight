@@ -89,18 +89,3 @@ flowchart TD
     V -->|No| X
     V -->|Yes| P["Eligible for calculation"]
 ```
-
-These checks are mathematical preconditions. They are not therapeutic-range rules.
-
-## Stage 4 model/UI changes implied by this flow
-
-1. Add a typed `creatinineClearanceMlMin` input for the POST population-Ke pathway.
-2. Add `infusionDurationHours` for PRE_POST AUC calculation.
-3. Make units explicit in UI labels: mg, hours, mg/L, mL/min, kg.
-4. Rename generic timing labels to their source-backed meanings.
-5. Keep calculation logic outside Compose.
-6. Keep autonomous dosing recommendations outside the first engine.
-
-## Testing ownership note
-
-When Stage 4 calculation code is implemented, the regression/unit-test contribution should be assigned to **Member 3** so that the team retains clear contribution ownership. The MOH worked case on PDF pp.275-276 supplies source-backed expected values for Ke, half-life, Cmax, Cmin, Co and AUC24.
