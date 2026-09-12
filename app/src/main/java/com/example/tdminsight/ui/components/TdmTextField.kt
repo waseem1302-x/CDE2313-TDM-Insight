@@ -16,20 +16,22 @@ fun TdmTextField(
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     supportingText: String? = null,
+    errorText: String? = null,
     singleLine: Boolean = true,
     enabled: Boolean = true
 ) {
+    val helperText = errorText ?: supportingText
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        supportingText = if (supportingText != null) {
-            { Text(supportingText) }
-        } else {
-            null
+        supportingText = helperText?.let { text ->
+            { Text(text) }
         },
+        isError = errorText != null,
         singleLine = singleLine,
         enabled = enabled
     )

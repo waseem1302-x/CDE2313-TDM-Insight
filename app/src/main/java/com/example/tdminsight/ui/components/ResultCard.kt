@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.tdminsight.model.TdmResultValue
+import com.example.tdminsight.ui.screens.formatResultValue
 
 @Composable
 fun ResultCard(
@@ -36,38 +37,30 @@ fun ResultCard(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            if (values.isEmpty()) {
-                Text(
-                    text = "No values available yet.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                values.forEachIndexed { index, item ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text(
-                            text = item.label,
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = buildString {
-                                append(item.value)
-                                if (!item.unit.isNullOrBlank()) {
-                                    append(" ")
-                                    append(item.unit)
-                                }
-                            },
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+            values.forEachIndexed { index, item ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = item.label,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = buildString {
+                            append(formatResultValue(item.value))
+                            if (!item.unit.isNullOrBlank()) {
+                                append(" ")
+                                append(item.unit)
+                            }
+                        },
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
 
-                    if (index < values.lastIndex) {
-                        HorizontalDivider()
-                    }
+                if (index < values.lastIndex) {
+                    HorizontalDivider()
                 }
             }
         }

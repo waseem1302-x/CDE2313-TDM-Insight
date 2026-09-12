@@ -10,6 +10,7 @@ import com.example.tdminsight.model.TdmResultValue
 import com.example.tdminsight.model.WorkflowType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -106,6 +107,105 @@ class TdmFlowStateTest {
             .completePatientInput()
             .selectWorkflow(WorkflowType.PRE)
             .submitCalculationInput(TdmInput(workflow = WorkflowType.POST))
+    }
+
+    @Test
+    fun workflowChoiceCanBeSelectedBeforeContinuing() {
+        val selectedState = TdmFlowState()
+            .startCase()
+            .completePatientInput()
+            .chooseWorkflow(WorkflowType.POST)
+
+        assertEquals(AppScreen.WORKFLOW_SELECTION, selectedState.currentScreen)
+        assertEquals(WorkflowType.POST, selectedState.selectedWorkflow)
+
+        val calculationState = selectedState.continueWithSelectedWorkflow()
+
+        assertEquals(AppScreen.CALCULATION_INPUT, calculationState.currentScreen)
+        assertEquals(WorkflowType.POST, calculationState.selectedWorkflow)
+    }
+
+    @Test
+    fun backNavigationUsesPredictableStageSixTransitions() {
+        val input = TdmInput(workflow = WorkflowType.PRE)
+        val result = sampleResult()
+        val resultState = TdmFlowState()
+            .startCase()
+            .completePatientInput()
+            .selectWorkflow(WorkflowType.PRE)
+            .submitCalculationInput(input)
+            .completeCalculation(result)
+
+        val reviewState = resultState.goBack()
+        assertEquals(AppScreen.REVIEW, reviewState.currentScreen)
+        assertEquals(result, reviewState.result)
+
+        val calculationState = reviewState.goBack()
+        assertEquals(AppScreen.CALCULATION_INPUT, calculationState.currentScreen)
+        assertNull(calculationState.result)
+
+        val workflowState = calculationState.goBack()
+        assertEquals(AppScreen.WORKFLOW_SELECTION, workflowState.currentScreen)
+
+        val patientState = workflowState.goBack()
+        assertEquals(AppScreen.PATIENT_INPUT, patientState.currentScreen)
+
+        val homeState = patientState.goBack()
+        assertEquals(AppScreen.HOME, homeState.currentScreen)
+    }
+
+    @Test
+    fun changingWorkflowClearsSubmittedInputAndResult() {
+        val resultState = TdmFlowState()
+            .startCase()
+            .completePatientInput()
+            .selectWorkflow(WorkflowType.PRE)
+            .submitCalculationInput(TdmInput(workflow = WorkflowType.PRE))
+            .completeCalculation(sampleResult())
+
+        val changedState = resultState
+            .goBack()
+            .goBack()
+            .goBack()
+            .chooseWorkflow(WorkflowType.POST)
+
+        assertEquals(AppScreen.WORKFLOW_SELECTION, changedState.currentScreen)
+        assertEquals(WorkflowType.POST, changedState.selectedWorkflow)
+        assertNull(changedState.input)
+        assertNull(changedState.result)
+    }
+
+    @Test
+    fun disclaimerReturnsToOriginatingScreen() {
+        val reviewState = TdmFlowState()
+            .startCase()
+            .completePatientInput()
+            .selectWorkflow(WorkflowType.PRE)
+            .submitCalculationInput(TdmInput(workflow = WorkflowType.PRE))
+
+        val disclaimerState = reviewState.openDisclaimer()
+        assertEquals(AppScreen.DISCLAIMER, disclaimerState.currentScreen)
+
+        val returnedState = disclaimerState.returnFromDisclaimer()
+        assertEquals(AppScreen.REVIEW, returnedState.currentScreen)
+        assertEquals(reviewState.input, returnedState.input)
+    }
+
+    @Test
+    fun resetClearsCaseStateAndReturnsHome() {
+        val populatedState = TdmFlowState()
+            .startCase()
+            .completePatientInput()
+            .selectWorkflow(WorkflowType.PRE)
+            .submitCalculationInput(TdmInput(workflow = WorkflowType.PRE))
+            .completeCalculation(sampleResult())
+
+        val resetState = populatedState.reset()
+
+        assertEquals(AppScreen.HOME, resetState.currentScreen)
+        assertNull(resetState.selectedWorkflow)
+        assertNull(resetState.input)
+        assertNull(resetState.result)
     }
 
     private fun sampleResult(): TdmResult = TdmResult(

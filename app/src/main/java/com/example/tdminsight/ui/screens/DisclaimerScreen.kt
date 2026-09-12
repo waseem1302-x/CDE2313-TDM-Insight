@@ -45,12 +45,11 @@ fun DisclaimerScreen(
                     text = "TDM Insight is an academic prototype created for educational and software-development purposes only.",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                DisclaimerPoint("It is not clinically validated.")
-                DisclaimerPoint("It is not prescribing software.")
-                DisclaimerPoint("It is not diagnostic software.")
-                DisclaimerPoint("It is not autonomous treatment-decision software.")
+                DisclaimerPoint("It is not a substitute for professional clinical judgement.")
+                DisclaimerPoint("It does not provide autonomous dose or treatment recommendations.")
                 DisclaimerPoint("Use fictional demonstration cases only.")
-                DisclaimerPoint("Clinical equations, targets, units, assumptions and reference values require lecturer-approved authoritative sources before implementation or use.")
+                DisclaimerPoint("Clinical equations, units, assumptions and reference values come from the approved project specification.")
+                DisclaimerPoint("Calculations should be independently verified before any real clinical use.")
             }
         }
 

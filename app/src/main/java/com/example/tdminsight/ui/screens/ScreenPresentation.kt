@@ -4,6 +4,8 @@ import com.example.tdminsight.model.TdmInput
 import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.model.WorkflowType
 import com.example.tdminsight.model.requirements
+import java.util.Locale
+import kotlin.math.abs
 
 enum class CalculationField {
     MEDICATION_DOSE,
@@ -44,10 +46,14 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
         if (value.isNotBlank()) add(ReviewItem(patientLabel(key), value))
     }
 
-    input.medicationDose?.let { add(ReviewItem("Medication dose", it.toString())) }
-    input.dosingInterval?.let { add(ReviewItem("Dosing interval", it.toString())) }
-    input.preDoseConcentration?.let { add(ReviewItem("Pre-dose concentration", it.toString())) }
-    input.postDoseConcentration?.let { add(ReviewItem("Post-dose concentration", it.toString())) }
+    input.medicationDose?.let { add(ReviewItem("Medication dose (mg)", it.toString())) }
+    input.dosingInterval?.let { add(ReviewItem("Dosing interval (hours)", it.toString())) }
+    input.preDoseConcentration?.let {
+        add(ReviewItem("Pre-dose concentration (mg/L)", it.toString()))
+    }
+    input.postDoseConcentration?.let {
+        add(ReviewItem("Post-dose concentration (mg/L)", it.toString()))
+    }
     input.creatinineClearanceMlMin?.let {
         add(ReviewItem("Creatinine clearance (mL/min)", it.toString()))
     }
@@ -62,6 +68,20 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
     input.laboratoryInformation.forEach { (key, value) ->
         if (value.isNotBlank()) add(ReviewItem(laboratoryLabel(key), value))
     }
+}
+
+fun isPatientInputField(field: String): Boolean =
+    field == TdmInputKeys.AGE_YEARS || field == TdmInputKeys.BODY_WEIGHT_KG
+
+fun formatResultValue(value: Double): String {
+    val decimalPlaces = when {
+        abs(value) >= 100.0 -> 2
+        abs(value) >= 1.0 -> 3
+        else -> 4
+    }
+    return String.format(Locale.US, "%.${decimalPlaces}f", value)
+        .trimEnd('0')
+        .trimEnd('.')
 }
 
 private fun patientLabel(key: String): String = when (key) {

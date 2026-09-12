@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,7 +27,8 @@ fun HomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 32.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -34,7 +37,12 @@ fun HomeScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Native Android therapeutic drug monitoring calculator prototype for Vancomycin workflows.",
+            text = "Therapeutic Drug Monitoring Calculator",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "An academic Vancomycin pharmacokinetic calculator supporting PRE, POST and PRE + POST workflows.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -47,15 +55,15 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.secondaryContainer
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(18.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "Academic prototype",
+                    text = "Academic use only",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Use fictional cases only. Clinical equations and reference values must come from approved authoritative sources.",
+                    text = "Use fictional demonstration cases. Results support coursework and must not be treated as autonomous clinical advice.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

@@ -52,9 +52,9 @@ fun WorkflowCard(
             )
             Text(
                 text = when (workflow) {
-                    WorkflowType.PRE -> "Use the pre-dose workflow inputs."
-                    WorkflowType.POST -> "Use the post-dose workflow inputs and sampling information."
-                    WorkflowType.PRE_POST -> "Use both concentration inputs with the required timing information."
+                    WorkflowType.PRE -> "Uses a measured pre-dose/trough concentration."
+                    WorkflowType.POST -> "Uses a measured post-dose concentration, sampling delay and creatinine clearance."
+                    WorkflowType.PRE_POST -> "Uses paired concentrations and timing for patient-specific PK and AUC calculations."
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
