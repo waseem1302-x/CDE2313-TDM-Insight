@@ -64,30 +64,3 @@ The comparison repository `sbr-hkyr/MobileAppProject` is intentionally excluded 
 | 275 | Worked-case Ke, half-life, Cmax, Cmin and Co used as future test references. |
 | 276 | Worked-case AUC/AUC24 used as future test references; Vd numerical inconsistency noted in main specification. |
 | 277 | Chapter references reviewed for provenance. |
-
-## Comparison-repository classification
-
-The public repository `sbr-hkyr/MobileAppProject` implements many similar calculations. Its implementation was classified as follows:
-
-### Adaptable after source verification
-
-- dedicated calculation-engine architecture;
-- PRE / POST / PRE_POST branching;
-- population Ke concept;
-- two-point Ke concept;
-- half-life and concentration extrapolation;
-- explainable calculation steps.
-
-### Do not copy directly
-
-- silent default concentrations;
-- hard-coded clinical validation ranges without source mapping;
-- automated dose recommendations;
-- suggested-dose rounding;
-- generic target-trough classification without indication context;
-- its 1000 mg/hour infusion warning (the reviewed MOH handbook states a different administration limit/context);
-- equations/timing adjustments that differ from the selected MOH calculation specification.
-
-## Source-version caveat
-
-The current PhIS portal lists a newer 13th-edition TDM Calculator manual. The directly reviewed public Vancomycin calculator PDF for this audit was the 9th edition. The MOH 2019 pharmacokinetics handbook is the equation authority for this Stage 3 specification; PhIS is used primarily to confirm workflow/input structure.
