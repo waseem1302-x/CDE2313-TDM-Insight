@@ -1,6 +1,7 @@
 package com.example.tdminsight.validation
 
 import com.example.tdminsight.model.TdmInput
+import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.model.WorkflowType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -244,6 +245,155 @@ class TdmInputValidatorTest {
 
         assertTrue(result.hasErrors)
         assertTrue(result.issues.isNotEmpty())
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun postStructuralValidationRemainsBackwardCompatibleWithoutCrCl() {
+        val result = validator.validate(
+            TdmInput(
+                workflow = WorkflowType.POST,
+                postDoseConcentration = 25.0,
+                samplingInformation = mapOf(
+                    TdmInputKeys.POST_SAMPLE_DELAY_HOURS to 1.5
+                )
+            )
+        )
+
+        assertFalse(result.hasErrors)
+        assertNotNull(result.validatedInput)
+        assertFalse(result.errors.any { it.field == "creatinineClearanceMlMin" })
+    }
+
+    @Test
+    fun postRequiresCreatinineClearanceAtCalculationGate() {
+        val result = validator.validateForCalculation(
+            TdmInput(
+                workflow = WorkflowType.POST,
+                patientParameters = mapOf(
+                    TdmInputKeys.AGE_YEARS to "50",
+                    TdmInputKeys.BODY_WEIGHT_KG to "70"
+                ),
+                medicationDose = 1000.0,
+                dosingInterval = 12.0,
+                postDoseConcentration = 25.0,
+                samplingInformation = mapOf(
+                    TdmInputKeys.POST_SAMPLE_DELAY_HOURS to 1.5
+                )
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertTrue(result.errors.any { it.field == "creatinineClearanceMlMin" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun prePostStructuralValidationRemainsBackwardCompatibleWithoutInfusionDuration() {
+        val result = validator.validate(
+            TdmInput(
+                workflow = WorkflowType.PRE_POST,
+                preDoseConcentration = 15.9,
+                postDoseConcentration = 29.3,
+                samplingInformation = mapOf(
+                    TdmInputKeys.POST_SAMPLE_DELAY_HOURS to 1.0,
+                    TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS to 2.5
+                )
+            )
+        )
+
+        assertFalse(result.hasErrors)
+        assertNotNull(result.validatedInput)
+        assertFalse(result.errors.any { it.field == "infusionDurationHours" })
+    }
+
+    @Test
+    fun prePostRequiresInfusionDurationAtCalculationGate() {
+        val result = validator.validateForCalculation(
+            TdmInput(
+                workflow = WorkflowType.PRE_POST,
+                patientParameters = mapOf(TdmInputKeys.BODY_WEIGHT_KG to "70"),
+                medicationDose = 750.0,
+                dosingInterval = 12.0,
+                preDoseConcentration = 15.9,
+                postDoseConcentration = 29.3,
+                samplingInformation = mapOf(
+                    TdmInputKeys.POST_SAMPLE_DELAY_HOURS to 1.0,
+                    TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS to 2.5
+                )
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertTrue(result.errors.any { it.field == "infusionDurationHours" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun postDraftParsesCreatinineClearance() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.POST,
+                postDoseConcentration = "25",
+                samplingTime = "1.5",
+                creatinineClearanceMlMin = "80"
+            )
+        )
+
+        assertFalse(result.hasErrors)
+        assertEquals(80.0, result.validatedInput?.creatinineClearanceMlMin ?: 0.0, 0.0)
+    }
+
+    @Test
+    fun prePostDraftParsesInfusionDuration() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE_POST,
+                preDoseConcentration = "15.9",
+                postDoseConcentration = "29.3",
+                samplingTime = "1",
+                additionalTimingInformation = "2.5",
+                infusionDurationHours = "1"
+            )
+        )
+
+        assertFalse(result.hasErrors)
+        assertEquals(1.0, result.validatedInput?.infusionDurationHours ?: 0.0, 0.0)
+    }
+
+    @Test
+    fun malformedCreatinineClearanceDraftProducesBlockingIssue() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.POST,
+                postDoseConcentration = "25",
+                samplingTime = "1.5",
+                creatinineClearanceMlMin = "abc"
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertTrue(result.errors.any { it.field == "creatinineClearanceMlMin" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun nonFiniteNewDraftFieldsProduceBlockingIssues() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE_POST,
+                preDoseConcentration = "15.9",
+                postDoseConcentration = "29.3",
+                samplingTime = "1",
+                additionalTimingInformation = "2.5",
+                creatinineClearanceMlMin = "Infinity",
+                infusionDurationHours = "NaN"
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertTrue(result.errors.any { it.field == "creatinineClearanceMlMin" })
+        assertTrue(result.errors.any { it.field == "infusionDurationHours" })
         assertNull(result.validatedInput)
     }
 }
