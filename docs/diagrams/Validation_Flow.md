@@ -4,32 +4,32 @@ This diagram documents structural/input validation only. It does not represent c
 
 ```mermaid
 flowchart TD
-    A[Raw calculation input and patient parameters] --> B[Safely parse supplied numeric text]
-    B --> C{Malformed or non-finite?}
-    C -->|Yes| E[Add ERROR issue]
-    C -->|No| D[Build or continue with typed TdmInput]
+    A["Raw calculation input and patient parameters"] --> B["Safely parse supplied numeric text"]
+    B --> C{"Malformed or non-finite?"}
+    C -->|Yes| E["Add ERROR issue"]
+    C -->|No| D["Build or continue with typed TdmInput"]
 
-    D --> P[Check non-blank Age and Weight as finite numeric text]
-    P --> Q{Invalid patient numeric field?}
+    D --> P["Check non-blank Age and Weight as finite numeric text"]
+    P --> Q{"Invalid patient numeric field?"}
     Q -->|Yes| E
-    Q -->|No| F[Read WorkflowType.requirements()]
+    Q -->|No| F["Read WorkflowType.requirements()"]
 
-    F --> G[Check required PRE / POST / sampling / additional timing fields]
-    G --> H{Required value missing?}
+    F --> G["Check required PRE / POST / sampling / additional timing fields"]
+    G --> H{"Required value missing?"}
     H -->|Yes| E
-    H -->|No| I[Check supplied workflow-specific fields]
+    H -->|No| I["Check supplied workflow-specific fields"]
 
-    I --> J{Value supplied although workflow does not require it?}
-    J -->|Yes| K[Add REVIEW issue]
-    J -->|No| L[No issue]
+    I --> J{"Value supplied although workflow does not require it?"}
+    J -->|Yes| K["Add REVIEW issue"]
+    J -->|No| L["No issue"]
 
-    E --> M{Any ERROR issues?}
+    E --> M{"Any ERROR issues?"}
     K --> M
     L --> M
 
-    M -->|Yes| N[Return ValidationResult<br/>canProceed = false]
-    M -->|No| O[Return ValidationResult<br/>canProceed = true<br/>validatedInput available]
-    O --> R[Eligible for future approved calculation stage]
+    M -->|Yes| N["Return ValidationResult<br/>canProceed = false"]
+    M -->|No| O["Return ValidationResult<br/>canProceed = true<br/>validatedInput available"]
+    O --> R["Eligible for future approved calculation stage"]
 ```
 
 ## Rules represented
