@@ -4,23 +4,23 @@ The architecture keeps presentation, structural validation, calculation contract
 
 ```mermaid
 flowchart LR
-    UI[Compose UI Screens]
-    STATE[Input State / TdmInputDraft]
-    VALIDATION[Structural Validation<br/>TdmInputValidator]
-    INPUT[TdmInput]
-    CALC[TdmCalculator Interface<br/>Approved implementation pending]
-    RESULT[TdmResult]
-    RESULTUI[ResultScreen]
+    UI["Compose UI Screens"]
+    STATE["Input State / TdmInputDraft"]
+    VALIDATION["Structural Validation<br/>TdmInputValidator"]
+    INPUT["TdmInput"]
+    CALC["TdmCalculator Interface<br/>Approved implementation pending"]
+    RESULT["TdmResult"]
+    RESULTUI["ResultScreen"]
 
     UI --> STATE
     STATE --> VALIDATION
-    VALIDATION -->|No blocking errors| INPUT
-    VALIDATION -->|Errors / review issues| UI
+    VALIDATION -->|"No blocking errors"| INPUT
+    VALIDATION -->|"Errors / review issues"| UI
     INPUT --> CALC
     CALC --> RESULT
     RESULT --> RESULTUI
 
-    REQ[WorkflowType.requirements()] --> UI
+    REQ["WorkflowType.requirements()"] --> UI
     REQ --> VALIDATION
 ```
 
