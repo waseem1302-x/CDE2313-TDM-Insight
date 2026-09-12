@@ -116,4 +116,20 @@ class ScreenPresentationTest {
             }
         )
     }
+
+    @Test
+    fun patientValidationFieldsAreRecognizedWithoutCatchingCalculationFields() {
+        assertTrue(isPatientInputField(TdmInputKeys.AGE_YEARS))
+        assertTrue(isPatientInputField(TdmInputKeys.BODY_WEIGHT_KG))
+        assertFalse(isPatientInputField("medicationDose"))
+        assertFalse(isPatientInputField("creatinineClearanceMlMin"))
+    }
+
+    @Test
+    fun resultDisplayFormattingKeepsUsefulPrecisionWithoutChangingStoredValue() {
+        assertEquals("656", formatResultValue(656.0))
+        assertEquals("327.95", formatResultValue(327.9477207038))
+        assertEquals("40.707", formatResultValue(40.7069408740))
+        assertEquals("0.0832", formatResultValue(0.0831957012))
+    }
 }
