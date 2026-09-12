@@ -10,7 +10,8 @@ data class TdmFlowState(
     val currentScreen: AppScreen = AppScreen.HOME,
     val selectedWorkflow: WorkflowType? = null,
     val input: TdmInput? = null,
-    val result: TdmResult? = null
+    val result: TdmResult? = null,
+    val disclaimerReturnScreen: AppScreen? = null
 ) {
     fun startCase(): TdmFlowState {
         requireScreen(AppScreen.HOME)
@@ -22,15 +23,23 @@ data class TdmFlowState(
         return copy(currentScreen = AppScreen.WORKFLOW_SELECTION)
     }
 
-    fun selectWorkflow(workflow: WorkflowType): TdmFlowState {
+    fun chooseWorkflow(workflow: WorkflowType): TdmFlowState {
         requireScreen(AppScreen.WORKFLOW_SELECTION)
         return copy(
-            currentScreen = AppScreen.CALCULATION_INPUT,
             selectedWorkflow = workflow,
             input = null,
             result = null
         )
     }
+
+    fun continueWithSelectedWorkflow(): TdmFlowState {
+        requireScreen(AppScreen.WORKFLOW_SELECTION)
+        check(selectedWorkflow != null) { "A workflow must be selected before continuing." }
+        return copy(currentScreen = AppScreen.CALCULATION_INPUT)
+    }
+
+    fun selectWorkflow(workflow: WorkflowType): TdmFlowState =
+        chooseWorkflow(workflow).continueWithSelectedWorkflow()
 
     fun submitCalculationInput(input: TdmInput): TdmFlowState {
         requireScreen(AppScreen.CALCULATION_INPUT)
@@ -62,7 +71,37 @@ data class TdmFlowState(
         )
     }
 
-    fun openDisclaimer(): TdmFlowState = copy(currentScreen = AppScreen.DISCLAIMER)
+    fun openDisclaimer(): TdmFlowState {
+        check(currentScreen != AppScreen.DISCLAIMER) { "Disclaimer is already open." }
+        return copy(
+            currentScreen = AppScreen.DISCLAIMER,
+            disclaimerReturnScreen = currentScreen
+        )
+    }
+
+    fun returnFromDisclaimer(): TdmFlowState {
+        requireScreen(AppScreen.DISCLAIMER)
+        return copy(
+            currentScreen = disclaimerReturnScreen ?: AppScreen.HOME,
+            disclaimerReturnScreen = null
+        )
+    }
+
+    fun goBack(): TdmFlowState = when (currentScreen) {
+        AppScreen.HOME -> this
+        AppScreen.PATIENT_INPUT -> copy(currentScreen = AppScreen.HOME)
+        AppScreen.WORKFLOW_SELECTION -> copy(currentScreen = AppScreen.PATIENT_INPUT)
+        AppScreen.CALCULATION_INPUT -> copy(
+            currentScreen = AppScreen.WORKFLOW_SELECTION,
+            result = null
+        )
+        AppScreen.REVIEW -> copy(
+            currentScreen = AppScreen.CALCULATION_INPUT,
+            result = null
+        )
+        AppScreen.RESULT -> copy(currentScreen = AppScreen.REVIEW)
+        AppScreen.DISCLAIMER -> returnFromDisclaimer()
+    }
 
     fun reset(): TdmFlowState = TdmFlowState()
 
