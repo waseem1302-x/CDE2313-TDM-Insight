@@ -11,5 +11,7 @@ data class TdmInputDraft(
     val postDoseConcentration: String = "",
     val samplingTime: String = "",
     val additionalTimingInformation: String = "",
-    val laboratoryInformation: Map<String, String> = emptyMap()
+    val laboratoryInformation: Map<String, String> = emptyMap(),
+    val creatinineClearanceMlMin: String = "",
+    val infusionDurationHours: String = ""
 )
