@@ -66,6 +66,9 @@ class TdmInputValidator {
         val issues = mutableListOf<ValidationIssue>()
         val requirements = input.workflow.requirements()
 
+        validateOptionalFiniteText("age", input.patientParameters["age"], issues)
+        validateOptionalFiniteText("weight", input.patientParameters["weight"], issues)
+
         validateFiniteValue("medicationDose", input.medicationDose, issues)
         validateFiniteValue("dosingInterval", input.dosingInterval, issues)
         validateFiniteValue("preDoseConcentration", input.preDoseConcentration, issues)
@@ -126,6 +129,24 @@ class TdmInputValidator {
         }
 
         return parsed
+    }
+
+    private fun validateOptionalFiniteText(
+        field: String,
+        rawValue: String?,
+        issues: MutableList<ValidationIssue>
+    ) {
+        val normalized = rawValue?.trim().orEmpty()
+        if (normalized.isEmpty()) return
+
+        val parsed = normalized.toDoubleOrNull()
+        if (parsed == null || !parsed.isFinite()) {
+            issues += ValidationIssue(
+                field = field,
+                message = "Enter a finite numeric value.",
+                severity = ValidationSeverity.ERROR
+            )
+        }
     }
 
     private fun validateFiniteValue(

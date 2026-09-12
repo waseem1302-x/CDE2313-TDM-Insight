@@ -69,7 +69,7 @@ The current project supports or defines the following functions:
 - present only the concentration/timing fields relevant to the selected workflow;
 - represent calculation input through `TdmInput`;
 - structurally validate workflow-required values before a future calculation stage;
-- safely parse raw numeric calculation-entry values through the validation layer;
+- safely parse raw numeric calculation-entry values and structurally validate supplied numeric patient fields such as Age and Weight;
 - distinguish blocking validation errors from non-blocking review items;
 - review populated inputs before calculation;
 - represent future calculation output through `TdmResult`;
@@ -90,7 +90,7 @@ Workflow rules are centralised in `WorkflowType.requirements()`. Validation is i
 
 ### Safe handling of invalid inputs
 
-The structural validation layer returns validation issues instead of relying on unsafe numeric parsing. Malformed or non-finite numeric values are blocking errors. Missing workflow-required values are also blocking errors.
+The structural validation layer returns validation issues instead of relying on unsafe numeric parsing. Malformed or non-finite numeric values are blocking errors, including non-blank Age and Weight values that cannot be represented as finite numbers. Missing workflow-required values are also blocking errors.
 
 ### Separation of concerns
 
@@ -120,7 +120,7 @@ Raw text entry can be represented by `TdmInputDraft` in the validation layer. On
 
 ### Validation
 
-`TdmInputValidator` checks input structure and numeric safety. It does not contain clinical equations or therapeutic targets.
+`TdmInputValidator` checks input structure and numeric safety, including finite numeric representation for non-blank Age and Weight patient parameters. It does not contain clinical equations or therapeutic targets.
 
 ### TDM Calculation Engine
 
@@ -159,6 +159,8 @@ Required PRE, POST, sampling, and additional-timing values are determined by `Wo
 ### Numeric validation
 
 For numeric calculation-entry values supplied as text, parsing uses safe conversion. Blank optional values remain absent. Non-numeric or non-finite values produce blocking errors rather than exceptions.
+
+The patient parameters `age` and `weight` remain strings in `TdmInput`, but when either value is non-blank the validator checks that it can be safely parsed as a finite number. This is structural numeric validation only; no age or weight ranges or clinical thresholds are imposed.
 
 Typed numeric values supplied directly through `TdmInput` are also checked for finiteness.
 

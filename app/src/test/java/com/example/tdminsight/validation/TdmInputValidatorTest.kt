@@ -120,6 +120,76 @@ class TdmInputValidatorTest {
     }
 
     @Test
+    fun nonNumericAgeProducesBlockingError() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE,
+                patientParameters = mapOf("age" to "abc"),
+                preDoseConcentration = "12"
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertFalse(result.canProceed)
+        assertTrue(result.errors.any { it.field == "age" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun nonNumericWeightProducesBlockingError() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE,
+                patientParameters = mapOf("weight" to "not-a-number"),
+                preDoseConcentration = "12"
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertFalse(result.canProceed)
+        assertTrue(result.errors.any { it.field == "weight" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun nonFinitePatientNumericTextProducesBlockingErrors() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE,
+                patientParameters = mapOf(
+                    "age" to "NaN",
+                    "weight" to "Infinity"
+                ),
+                preDoseConcentration = "12"
+            )
+        )
+
+        assertTrue(result.hasErrors)
+        assertTrue(result.errors.any { it.field == "age" })
+        assertTrue(result.errors.any { it.field == "weight" })
+        assertNull(result.validatedInput)
+    }
+
+    @Test
+    fun validNumericAgeAndWeightDoNotCreateBlockingErrors() {
+        val result = validator.validate(
+            TdmInputDraft(
+                workflow = WorkflowType.PRE,
+                patientParameters = mapOf(
+                    "age" to "42",
+                    "weight" to "73.5"
+                ),
+                preDoseConcentration = "12"
+            )
+        )
+
+        assertFalse(result.hasErrors)
+        assertTrue(result.canProceed)
+        assertEquals("42", result.validatedInput?.patientParameters?.get("age"))
+        assertEquals("73.5", result.validatedInput?.patientParameters?.get("weight"))
+    }
+
+    @Test
     fun nonFiniteNumericInputProducesBlockingError() {
         val result = validator.validate(
             TdmInput(
