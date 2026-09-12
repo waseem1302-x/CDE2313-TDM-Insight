@@ -14,6 +14,8 @@ class WorkflowRequirementsTest {
         assertFalse(requirements.requiresPostConcentration)
         assertFalse(requirements.requiresSamplingInformation)
         assertFalse(requirements.requiresAdditionalTimingInformation)
+        assertFalse(requirements.requiresCreatinineClearance)
+        assertFalse(requirements.requiresInfusionDuration)
     }
 
     @Test
@@ -24,6 +26,8 @@ class WorkflowRequirementsTest {
         assertTrue(requirements.requiresPostConcentration)
         assertTrue(requirements.requiresSamplingInformation)
         assertFalse(requirements.requiresAdditionalTimingInformation)
+        assertTrue(requirements.requiresCreatinineClearance)
+        assertFalse(requirements.requiresInfusionDuration)
     }
 
     @Test
@@ -34,5 +38,7 @@ class WorkflowRequirementsTest {
         assertTrue(requirements.requiresPostConcentration)
         assertTrue(requirements.requiresSamplingInformation)
         assertTrue(requirements.requiresAdditionalTimingInformation)
+        assertFalse(requirements.requiresCreatinineClearance)
+        assertTrue(requirements.requiresInfusionDuration)
     }
 }
