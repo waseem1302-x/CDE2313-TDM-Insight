@@ -202,8 +202,6 @@ On Windows:
 .\gradlew assembleDebug
 ```
 
-Because the final README task changes documentation only, no application code or clinical formula is modified by this branch.
-
 ## Build and Run
 
 1. Clone the repository:
