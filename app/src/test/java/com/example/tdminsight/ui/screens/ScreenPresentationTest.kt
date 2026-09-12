@@ -69,8 +69,8 @@ class ScreenPresentationTest {
 
         assertEquals("Vancomycin Pre", items.first().value)
         assertTrue(items.any { it.label == "Case ID" && it.value == "CASE-01" })
-        assertTrue(items.any { it.label == "Medication dose" && it.value == "500.0" })
-        assertTrue(items.any { it.label == "Pre-dose concentration" && it.value == "12.5" })
+        assertTrue(items.any { it.label == "Medication dose (mg)" && it.value == "500.0" })
+        assertTrue(items.any { it.label == "Pre-dose concentration (mg/L)" && it.value == "12.5" })
         assertFalse(items.any { it.value.isBlank() })
         assertFalse(items.any { it.label == "Laboratory note" })
     }
@@ -99,6 +99,10 @@ class ScreenPresentationTest {
 
         assertTrue(items.any { it.label == "Age (years)" && it.value == "50" })
         assertTrue(items.any { it.label == "Weight (kg)" && it.value == "70" })
+        assertTrue(items.any { it.label == "Medication dose (mg)" && it.value == "750.0" })
+        assertTrue(items.any { it.label == "Dosing interval (hours)" && it.value == "12.0" })
+        assertTrue(items.any { it.label == "Pre-dose concentration (mg/L)" && it.value == "15.9" })
+        assertTrue(items.any { it.label == "Post-dose concentration (mg/L)" && it.value == "29.3" })
         assertTrue(items.any { it.label == "Creatinine clearance (mL/min)" && it.value == "80.0" })
         assertTrue(items.any { it.label == "Infusion duration (hours)" && it.value == "1.0" })
         assertTrue(
