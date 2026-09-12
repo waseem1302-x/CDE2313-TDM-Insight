@@ -23,7 +23,8 @@ The calculation specification below is based on official Ministry of Health Mala
 
 ### Source A — Ministry of Health Malaysia
 
-**Clinical Pharmacokinetics Pharmacy Handbook, Second Edition (2019)**  
+**Clinical Pharmacokinetics Pharmacy Handbook, Second Edition (2019)**
+
 Prepared by the Clinical Pharmacy Working Committee (Clinical Pharmacokinetics Subspecialty), Pharmacy Practice & Development Division, Ministry of Health Malaysia.
 
 Official publication page:
