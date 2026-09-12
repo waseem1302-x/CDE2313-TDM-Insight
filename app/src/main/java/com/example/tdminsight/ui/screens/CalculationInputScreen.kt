@@ -38,7 +38,11 @@ fun CalculationInputScreen(
     onLaboratoryNoteChange: (String) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    creatinineClearanceMlMin: String = "",
+    infusionDurationHours: String = "",
+    onCreatinineClearanceMlMinChange: (String) -> Unit = {},
+    onInfusionDurationHoursChange: (String) -> Unit = {}
 ) {
     val visibleFields = calculationFieldsFor(workflow)
 
@@ -63,9 +67,8 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = medicationDose,
                 onValueChange = onMedicationDoseChange,
-                label = "Medication dose",
-                keyboardType = KeyboardType.Decimal,
-                supportingText = "Use the unit defined by the approved project specification."
+                label = "Medication dose (mg)",
+                keyboardType = KeyboardType.Decimal
             )
         }
 
@@ -73,9 +76,8 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = dosingInterval,
                 onValueChange = onDosingIntervalChange,
-                label = "Dosing interval",
-                keyboardType = KeyboardType.Decimal,
-                supportingText = "Use the unit defined by the approved project specification."
+                label = "Dosing interval (hours)",
+                keyboardType = KeyboardType.Decimal
             )
         }
 
@@ -83,9 +85,8 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = preDoseConcentration,
                 onValueChange = onPreDoseConcentrationChange,
-                label = "Pre-dose concentration",
-                keyboardType = KeyboardType.Decimal,
-                supportingText = "Use the concentration unit approved for this project."
+                label = "Pre-dose concentration (mg/L)",
+                keyboardType = KeyboardType.Decimal
             )
         }
 
@@ -93,9 +94,8 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = postDoseConcentration,
                 onValueChange = onPostDoseConcentrationChange,
-                label = "Post-dose concentration",
-                keyboardType = KeyboardType.Decimal,
-                supportingText = "Use the concentration unit approved for this project."
+                label = "Post-dose concentration (mg/L)",
+                keyboardType = KeyboardType.Decimal
             )
         }
 
@@ -103,9 +103,9 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = samplingTime,
                 onValueChange = onSamplingTimeChange,
-                label = "Sampling time",
+                label = "Post sample — hours after infusion end",
                 keyboardType = KeyboardType.Decimal,
-                supportingText = "Enter the sampling value using the approved project definition and unit."
+                supportingText = "Time from the end of infusion to the post-dose blood sample."
             )
         }
 
@@ -113,9 +113,27 @@ fun CalculationInputScreen(
             TdmTextField(
                 value = additionalTimingInformation,
                 onValueChange = onAdditionalTimingInformationChange,
-                label = "Additional timing information",
+                label = "Pre/Post sample time difference (hours)",
                 keyboardType = KeyboardType.Decimal,
-                supportingText = "Use the timing definition required by the approved calculation specification."
+                supportingText = "Elapsed clock-time difference between the pre and post sample timestamps."
+            )
+        }
+
+        if (CalculationField.CREATININE_CLEARANCE in visibleFields) {
+            TdmTextField(
+                value = creatinineClearanceMlMin,
+                onValueChange = onCreatinineClearanceMlMinChange,
+                label = "Creatinine clearance (mL/min)",
+                keyboardType = KeyboardType.Decimal
+            )
+        }
+
+        if (CalculationField.INFUSION_DURATION in visibleFields) {
+            TdmTextField(
+                value = infusionDurationHours,
+                onValueChange = onInfusionDurationHoursChange,
+                label = "Infusion duration (hours)",
+                keyboardType = KeyboardType.Decimal
             )
         }
 

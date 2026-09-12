@@ -4,7 +4,9 @@ data class WorkflowRequirements(
     val requiresPreConcentration: Boolean,
     val requiresPostConcentration: Boolean,
     val requiresSamplingInformation: Boolean,
-    val requiresAdditionalTimingInformation: Boolean
+    val requiresAdditionalTimingInformation: Boolean,
+    val requiresCreatinineClearance: Boolean = false,
+    val requiresInfusionDuration: Boolean = false
 )
 
 fun WorkflowType.requirements(): WorkflowRequirements = when (this) {
@@ -19,13 +21,15 @@ fun WorkflowType.requirements(): WorkflowRequirements = when (this) {
         requiresPreConcentration = false,
         requiresPostConcentration = true,
         requiresSamplingInformation = true,
-        requiresAdditionalTimingInformation = false
+        requiresAdditionalTimingInformation = false,
+        requiresCreatinineClearance = true
     )
 
     WorkflowType.PRE_POST -> WorkflowRequirements(
         requiresPreConcentration = true,
         requiresPostConcentration = true,
         requiresSamplingInformation = true,
-        requiresAdditionalTimingInformation = true
+        requiresAdditionalTimingInformation = true,
+        requiresInfusionDuration = true
     )
 }

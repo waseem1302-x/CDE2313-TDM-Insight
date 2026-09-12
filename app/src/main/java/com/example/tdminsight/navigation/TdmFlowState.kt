@@ -1,5 +1,7 @@
 package com.example.tdminsight.navigation
 
+import com.example.tdminsight.calculation.TdmCalculator
+import com.example.tdminsight.calculation.VancomycinTdmCalculator
 import com.example.tdminsight.model.TdmInput
 import com.example.tdminsight.model.TdmResult
 import com.example.tdminsight.model.WorkflowType
@@ -40,6 +42,15 @@ data class TdmFlowState(
             input = input,
             result = null
         )
+    }
+
+    fun calculate(
+        calculator: TdmCalculator = VancomycinTdmCalculator()
+    ): TdmFlowState {
+        requireScreen(AppScreen.REVIEW)
+        val calculationInput = input
+            ?: throw IllegalStateException("Calculation input must exist before calculation can run.")
+        return completeCalculation(calculator.calculate(calculationInput))
     }
 
     fun completeCalculation(result: TdmResult): TdmFlowState {

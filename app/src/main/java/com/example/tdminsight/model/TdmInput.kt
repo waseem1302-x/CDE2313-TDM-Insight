@@ -8,5 +8,7 @@ data class TdmInput(
     val preDoseConcentration: Double? = null,
     val postDoseConcentration: Double? = null,
     val samplingInformation: Map<String, Double> = emptyMap(),
-    val laboratoryInformation: Map<String, String> = emptyMap()
+    val laboratoryInformation: Map<String, String> = emptyMap(),
+    val creatinineClearanceMlMin: Double? = null,
+    val infusionDurationHours: Double? = null
 )

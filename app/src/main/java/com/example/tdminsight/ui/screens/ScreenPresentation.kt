@@ -1,6 +1,7 @@
 package com.example.tdminsight.ui.screens
 
 import com.example.tdminsight.model.TdmInput
+import com.example.tdminsight.model.TdmInputKeys
 import com.example.tdminsight.model.WorkflowType
 import com.example.tdminsight.model.requirements
 
@@ -11,6 +12,8 @@ enum class CalculationField {
     POST_CONCENTRATION,
     SAMPLING_TIME,
     ADDITIONAL_TIMING,
+    CREATININE_CLEARANCE,
+    INFUSION_DURATION,
     LAB_NOTE
 }
 
@@ -28,6 +31,8 @@ fun calculationFieldsFor(workflow: WorkflowType): List<CalculationField> {
         if (requirements.requiresPostConcentration) add(CalculationField.POST_CONCENTRATION)
         if (requirements.requiresSamplingInformation) add(CalculationField.SAMPLING_TIME)
         if (requirements.requiresAdditionalTimingInformation) add(CalculationField.ADDITIONAL_TIMING)
+        if (requirements.requiresCreatinineClearance) add(CalculationField.CREATININE_CLEARANCE)
+        if (requirements.requiresInfusionDuration) add(CalculationField.INFUSION_DURATION)
         add(CalculationField.LAB_NOTE)
     }
 }
@@ -43,6 +48,12 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
     input.dosingInterval?.let { add(ReviewItem("Dosing interval", it.toString())) }
     input.preDoseConcentration?.let { add(ReviewItem("Pre-dose concentration", it.toString())) }
     input.postDoseConcentration?.let { add(ReviewItem("Post-dose concentration", it.toString())) }
+    input.creatinineClearanceMlMin?.let {
+        add(ReviewItem("Creatinine clearance (mL/min)", it.toString()))
+    }
+    input.infusionDurationHours?.let {
+        add(ReviewItem("Infusion duration (hours)", it.toString()))
+    }
 
     input.samplingInformation.forEach { (key, value) ->
         add(ReviewItem(samplingLabel(key), value.toString()))
@@ -55,15 +66,15 @@ fun buildReviewItems(input: TdmInput): List<ReviewItem> = buildList {
 
 private fun patientLabel(key: String): String = when (key) {
     "caseId" -> "Case ID"
-    "age" -> "Age"
-    "weight" -> "Weight"
+    TdmInputKeys.AGE_YEARS -> "Age (years)"
+    TdmInputKeys.BODY_WEIGHT_KG -> "Weight (kg)"
     "notes" -> "Case notes"
     else -> key.toReadableLabel()
 }
 
 private fun samplingLabel(key: String): String = when (key) {
-    "samplingTime" -> "Sampling time"
-    "additionalTiming" -> "Additional timing information"
+    TdmInputKeys.POST_SAMPLE_DELAY_HOURS -> "Post sample — hours after infusion end"
+    TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS -> "Pre/Post sample time difference (hours)"
     else -> key.toReadableLabel()
 }
 
