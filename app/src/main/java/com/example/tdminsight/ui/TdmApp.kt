@@ -35,6 +35,7 @@ import com.example.tdminsight.ui.screens.ResultScreen
 import com.example.tdminsight.ui.screens.ReviewScreen
 import com.example.tdminsight.ui.screens.WorkflowSelectionScreen
 import com.example.tdminsight.ui.screens.calculationFieldsFor
+import com.example.tdminsight.ui.screens.isPatientInputField
 import com.example.tdminsight.validation.TdmInputDraft
 import com.example.tdminsight.validation.TdmInputValidator
 import com.example.tdminsight.validation.ValidationIssue
@@ -68,6 +69,10 @@ fun TdmApp(modifier: Modifier = Modifier) {
         "notes" to caseNotes
     )
 
+    fun clearIssue(field: String) {
+        validationIssues = validationIssues.filterNot { it.field == field }
+    }
+
     fun clearForm() {
         caseId = ""
         ageYears = ""
@@ -100,6 +105,16 @@ fun TdmApp(modifier: Modifier = Modifier) {
         flowState = flowState.goBack()
     }
 
+    fun showValidationErrors(errors: List<ValidationIssue>) {
+        val patientIssues = errors.filter { isPatientInputField(it.field) }
+        if (patientIssues.isNotEmpty()) {
+            validationIssues = patientIssues
+            flowState = flowState.goBack().goBack()
+        } else {
+            validationIssues = errors
+        }
+    }
+
     fun submitCalculationInput(workflow: WorkflowType) {
         val draft = buildDraft(
             workflow = workflow,
@@ -117,14 +132,14 @@ fun TdmApp(modifier: Modifier = Modifier) {
 
         val structuralValidation = validator.validate(draft)
         if (structuralValidation.hasErrors) {
-            validationIssues = structuralValidation.errors
+            showValidationErrors(structuralValidation.errors)
             return
         }
 
         val input = structuralValidation.validatedInput ?: return
         val calculationValidation = validator.validateForCalculation(input)
         if (calculationValidation.hasErrors) {
-            validationIssues = calculationValidation.errors
+            showValidationErrors(calculationValidation.errors)
             return
         }
 
@@ -170,6 +185,7 @@ fun TdmApp(modifier: Modifier = Modifier) {
 
             AppScreen.PATIENT_INPUT -> PatientInputScreen(
                 patientParameters = patientParameters(),
+                validationIssues = validationIssues,
                 onParameterChange = { key, value ->
                     when (key) {
                         "caseId" -> caseId = value
@@ -177,6 +193,7 @@ fun TdmApp(modifier: Modifier = Modifier) {
                         TdmInputKeys.BODY_WEIGHT_KG -> bodyWeightKg = value
                         "notes" -> caseNotes = value
                     }
+                    clearIssue(key)
                 },
                 onBack = ::goBack,
                 onNext = {
@@ -220,15 +237,39 @@ fun TdmApp(modifier: Modifier = Modifier) {
                         creatinineClearanceMlMin = creatinineClearanceMlMin,
                         infusionDurationHours = infusionDurationHours,
                         validationIssues = validationIssues,
-                        onMedicationDoseChange = { medicationDose = it },
-                        onDosingIntervalChange = { dosingInterval = it },
-                        onPreDoseConcentrationChange = { preDoseConcentration = it },
-                        onPostDoseConcentrationChange = { postDoseConcentration = it },
-                        onSamplingTimeChange = { samplingTime = it },
-                        onAdditionalTimingInformationChange = { additionalTimingInformation = it },
+                        onMedicationDoseChange = {
+                            medicationDose = it
+                            clearIssue("medicationDose")
+                        },
+                        onDosingIntervalChange = {
+                            dosingInterval = it
+                            clearIssue("dosingInterval")
+                        },
+                        onPreDoseConcentrationChange = {
+                            preDoseConcentration = it
+                            clearIssue("preDoseConcentration")
+                        },
+                        onPostDoseConcentrationChange = {
+                            postDoseConcentration = it
+                            clearIssue("postDoseConcentration")
+                        },
+                        onSamplingTimeChange = {
+                            samplingTime = it
+                            clearIssue(TdmInputKeys.POST_SAMPLE_DELAY_HOURS)
+                        },
+                        onAdditionalTimingInformationChange = {
+                            additionalTimingInformation = it
+                            clearIssue(TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS)
+                        },
                         onLaboratoryNoteChange = { laboratoryNote = it },
-                        onCreatinineClearanceMlMinChange = { creatinineClearanceMlMin = it },
-                        onInfusionDurationHoursChange = { infusionDurationHours = it },
+                        onCreatinineClearanceMlMinChange = {
+                            creatinineClearanceMlMin = it
+                            clearIssue("creatinineClearanceMlMin")
+                        },
+                        onInfusionDurationHoursChange = {
+                            infusionDurationHours = it
+                            clearIssue("infusionDurationHours")
+                        },
                         onBack = ::goBack,
                         onNext = { submitCalculationInput(workflow) },
                         modifier = screenModifier
@@ -264,6 +305,7 @@ fun TdmApp(modifier: Modifier = Modifier) {
                 } else {
                     ResultScreen(
                         result = result,
+                        input = flowState.input,
                         onBackToReview = ::goBack,
                         onOpenDisclaimer = {
                             validationIssues = emptyList()

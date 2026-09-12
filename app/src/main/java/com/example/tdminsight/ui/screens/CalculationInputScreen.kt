@@ -59,7 +59,7 @@ fun CalculationInputScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text(
             text = workflow.displayName,
@@ -73,26 +73,28 @@ fun CalculationInputScreen(
 
         ValidationSummaryCard(validationIssues)
 
-        if (CalculationField.MEDICATION_DOSE in visibleFields) {
-            TdmTextField(
-                value = medicationDose,
-                onValueChange = onMedicationDoseChange,
-                label = "Medication dose (mg)",
-                keyboardType = KeyboardType.Decimal,
-                errorText = fieldErrors["medicationDose"]
-            )
-        }
+        SectionTitle("Dosage")
+        TdmTextField(
+            value = medicationDose,
+            onValueChange = onMedicationDoseChange,
+            label = "Medication dose (mg)",
+            keyboardType = KeyboardType.Decimal,
+            errorText = fieldErrors["medicationDose"]
+        )
+        TdmTextField(
+            value = dosingInterval,
+            onValueChange = onDosingIntervalChange,
+            label = "Dosing interval (hours)",
+            keyboardType = KeyboardType.Decimal,
+            errorText = fieldErrors["dosingInterval"]
+        )
 
-        if (CalculationField.DOSING_INTERVAL in visibleFields) {
-            TdmTextField(
-                value = dosingInterval,
-                onValueChange = onDosingIntervalChange,
-                label = "Dosing interval (hours)",
-                keyboardType = KeyboardType.Decimal,
-                errorText = fieldErrors["dosingInterval"]
-            )
+        if (
+            CalculationField.PRE_CONCENTRATION in visibleFields ||
+            CalculationField.POST_CONCENTRATION in visibleFields
+        ) {
+            SectionTitle("Concentrations")
         }
-
         if (CalculationField.PRE_CONCENTRATION in visibleFields) {
             TdmTextField(
                 value = preDoseConcentration,
@@ -102,7 +104,6 @@ fun CalculationInputScreen(
                 errorText = fieldErrors["preDoseConcentration"]
             )
         }
-
         if (CalculationField.POST_CONCENTRATION in visibleFields) {
             TdmTextField(
                 value = postDoseConcentration,
@@ -113,6 +114,13 @@ fun CalculationInputScreen(
             )
         }
 
+        if (
+            CalculationField.SAMPLING_TIME in visibleFields ||
+            CalculationField.ADDITIONAL_TIMING in visibleFields ||
+            CalculationField.INFUSION_DURATION in visibleFields
+        ) {
+            SectionTitle("Timing")
+        }
         if (CalculationField.SAMPLING_TIME in visibleFields) {
             TdmTextField(
                 value = samplingTime,
@@ -123,7 +131,6 @@ fun CalculationInputScreen(
                 errorText = fieldErrors[TdmInputKeys.POST_SAMPLE_DELAY_HOURS]
             )
         }
-
         if (CalculationField.ADDITIONAL_TIMING in visibleFields) {
             TdmTextField(
                 value = additionalTimingInformation,
@@ -134,17 +141,6 @@ fun CalculationInputScreen(
                 errorText = fieldErrors[TdmInputKeys.PRE_POST_SAMPLE_DIFFERENCE_HOURS]
             )
         }
-
-        if (CalculationField.CREATININE_CLEARANCE in visibleFields) {
-            TdmTextField(
-                value = creatinineClearanceMlMin,
-                onValueChange = onCreatinineClearanceMlMinChange,
-                label = "Creatinine clearance (mL/min)",
-                keyboardType = KeyboardType.Decimal,
-                errorText = fieldErrors["creatinineClearanceMlMin"]
-            )
-        }
-
         if (CalculationField.INFUSION_DURATION in visibleFields) {
             TdmTextField(
                 value = infusionDurationHours,
@@ -155,7 +151,19 @@ fun CalculationInputScreen(
             )
         }
 
+        if (CalculationField.CREATININE_CLEARANCE in visibleFields) {
+            SectionTitle("Renal Input")
+            TdmTextField(
+                value = creatinineClearanceMlMin,
+                onValueChange = onCreatinineClearanceMlMinChange,
+                label = "Creatinine clearance (mL/min)",
+                keyboardType = KeyboardType.Decimal,
+                errorText = fieldErrors["creatinineClearanceMlMin"]
+            )
+        }
+
         if (CalculationField.LAB_NOTE in visibleFields) {
+            SectionTitle("Notes")
             TdmTextField(
                 value = laboratoryNote,
                 onValueChange = onLaboratoryNoteChange,
@@ -178,8 +186,18 @@ fun CalculationInputScreen(
                 onClick = onNext,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Review")
+                Text("Continue to Review")
             }
         }
     }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(top = 6.dp)
+    )
 }
