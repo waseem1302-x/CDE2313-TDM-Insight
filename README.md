@@ -237,5 +237,3 @@ The project therefore has shared ownership across domain/calculation engineering
 - [Calculation Flow](docs/calculation/Calculation_Flow.md) — workflow-specific calculation dependency flow.
 - [Case Study Analysis](docs/Case_Study_Analysis.md) — project analysis and original software-design context.
 - [Application Wireframes](docs/wireframe/App_Wireframes.md) — editable design-stage wireframes.
-
-The older design-stage architecture document predates the implemented calculation engine. The architecture diagram in this README is reconstructed from the current production code and should be used as the current high-level system view.
